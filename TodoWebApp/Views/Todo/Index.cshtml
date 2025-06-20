@@ -1,0 +1,33 @@
+@model List<TodoWebApp.Models.TodoItem>
+
+@{
+    ViewData["Title"] = "To-Do List";
+}
+
+<h1>📝 To-Do List</h1>
+
+<form asp-action="Add" method="post">
+    <input name="title" placeholder="Enter new task..." required />
+    <button type="submit">Add</button>
+</form>
+
+<ul>
+    @foreach (var item in Model)
+    {
+        <li>
+            <form asp-action="Toggle" method="get" style="display:inline;">
+                <input type="hidden" name="id" value="@item.Id" />
+                <button type="submit">@((item.IsCompleted ? "✅" : "⬜"))</button>
+            </form>
+
+            <span style="@(item.IsCompleted ? "text-decoration: line-through;" : "")">
+                @item.Title
+            </span>
+
+            <form asp-action="Delete" method="get" style="display:inline;">
+                <input type="hidden" name="id" value="@item.Id" />
+                <button type="submit">🗑</button>
+            </form>
+        </li>
+    }
+</ul>
