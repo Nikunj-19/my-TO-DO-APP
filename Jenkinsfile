@@ -1,4 +1,4 @@
-pipeline {
+pipeline { 
     agent any
 
     environment {
@@ -12,12 +12,11 @@ pipeline {
     stages {
         stage('Clone') {
             steps {
-                checkout([
-                    $class: 'GitSCM',
+                checkout([$class: 'GitSCM',
                     branches: [[name: '*/main']],
                     userRemoteConfigs: [[
                         url: 'git@github.com:Nikunj-19/my-TO-DO-APP.git',
-                        credentialsId: "${GIT_CREDENTIALS_ID}"
+                        credentialsId: env.GIT_CREDENTIALS_ID
                     ]]
                 ])
             }
@@ -39,14 +38,13 @@ pipeline {
         stage('Deploy to EC2') {
             steps {
                 withCredentials([sshUserPrivateKey(credentialsId: env.CREDENTIALS_ID, keyFileVariable: 'KEY')]) {
-          bat """
-    powershell -Command "icacls '%KEY%' /inheritance:r"
-    powershell -Command "icacls '%KEY%' /remove:g BUILTIN\\Users"
-    powershell -Command "icacls '%KEY%' /grant:r `"$env:USERNAME:R`""
-    powershell -Command "ssh -i '%KEY%' -o StrictHostKeyChecking=no -o IdentitiesOnly=yes ${EC2_USER}@${EC2_HOST} mkdir -p ${EC2_DEPLOY_DIR}"
-    powershell -Command "scp -i '%KEY%' -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -r out\\* ${EC2_USER}@${EC2_HOST}:${EC2_DEPLOY_DIR}"
-          """
-
+                    bat """
+                    powershell -Command "icacls '%KEY%' /inheritance:r"
+                    powershell -Command "icacls '%KEY%' /remove:g BUILTIN\\Users"
+                    powershell -Command "icacls '%KEY%' /grant:r `"$env:USERNAME:R`""
+                    powershell -Command "ssh -i '%KEY%' -o StrictHostKeyChecking=no -o IdentitiesOnly=yes ${EC2_USER}@${EC2_HOST} mkdir -p ${EC2_DEPLOY_DIR}"
+                    powershell -Command "scp -i '%KEY%' -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -r out\\* ${EC2_USER}@${EC2_HOST}:${EC2_DEPLOY_DIR}"
+                    """
                 }
             }
         }
