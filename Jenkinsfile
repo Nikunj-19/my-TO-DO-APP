@@ -28,17 +28,18 @@ pipeline {
             }
         }
 
-        stage('Deploy to EC2') {
-            steps {
-                withCredentials([sshUserPrivateKey(credentialsId: env.CREDENTIALS_ID, keyFileVariable: 'KEY')]) {
-                    bat """
-                    powershell -Command "icacls '%KEY%' /inheritance:r"
-                    powershell -Command "icacls '%KEY%' /grant:r \\"%USERNAME%:R\\""
-                    powershell -Command "ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -i '%KEY%' ${EC2_USER}@${EC2_HOST} mkdir -p ${EC2_DEPLOY_DIR}"
-                    powershell -Command "scp -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -i '%KEY%' -r out\\* ${EC2_USER}@${EC2_HOST}:${EC2_DEPLOY_DIR}"
-                    """
-                }
-            }
+       stage('Deploy to EC2') {
+    steps {
+        withCredentials([sshUserPrivateKey(credentialsId: env.CREDENTIALS_ID, keyFileVariable: 'KEY')]) {
+            bat """
+            powershell -Command "icacls '%KEY%' /inheritance:r"
+            powershell -Command "icacls '%KEY%' /grant:r \\"NT AUTHORITY\\\\SYSTEM:R\\""
+            powershell -Command "ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -i '%KEY%' ${EC2_USER}@${EC2_HOST} mkdir -p ${EC2_DEPLOY_DIR}"
+            powershell -Command "scp -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -i '%KEY%' -r out\\* ${EC2_USER}@${EC2_HOST}:${EC2_DEPLOY_DIR}"
+            """
         }
+    }
+}
+
     }
 }
