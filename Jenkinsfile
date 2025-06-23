@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        EC2_HOST = '13.233.160.125' // your actual EC2 IP
+        EC2_HOST = '13.233.160.125'
         EC2_USER = 'ubuntu'
         EC2_DEPLOY_DIR = '/home/ubuntu/todoapp'
         CREDENTIALS_ID = 'ec2-ssh'
@@ -30,10 +30,10 @@ pipeline {
 
         stage('Deploy to EC2') {
             steps {
-                sshagent (credentials: [env.CREDENTIALS_ID]) {
+                withCredentials([sshUserPrivateKey(credentialsId: env.CREDENTIALS_ID, keyFileVariable: 'KEY')]) {
                     bat """
-                    powershell -Command "ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} mkdir -p ${EC2_DEPLOY_DIR}"
-                    powershell -Command "scp -o StrictHostKeyChecking=no -r out\\* ${EC2_USER}@${EC2_HOST}:${EC2_DEPLOY_DIR}"
+                    powershell -Command "ssh -i %KEY% -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} mkdir -p ${EC2_DEPLOY_DIR}"
+                    powershell -Command "scp -i %KEY% -o StrictHostKeyChecking=no -r out\\* ${EC2_USER}@${EC2_HOST}:${EC2_DEPLOY_DIR}"
                     """
                 }
             }
