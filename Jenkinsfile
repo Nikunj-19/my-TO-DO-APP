@@ -11,7 +11,8 @@ pipeline {
     stages {
         stage('Clone') {
             steps {
-                git url: 'https://github.com/Nikunj-19/my-TO-DO-APP.git', branch: 'main'
+               git url: 'git@github.com:Nikunj-19/my-TO-DO-APP.git', branch: 'main'
+
             }
         }
 
