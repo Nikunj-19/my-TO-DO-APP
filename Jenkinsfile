@@ -5,14 +5,20 @@ pipeline {
         EC2_HOST = '13.233.160.125'
         EC2_USER = 'ubuntu'
         EC2_DEPLOY_DIR = '/home/ubuntu/todoapp'
-        CREDENTIALS_ID = 'ec2-ssh'
+        CREDENTIALS_ID = 'ec2-ssh'           // Jenkins SSH key for EC2
+        GIT_CREDENTIALS_ID = 'github-ssh-key' // Jenkins SSH key for GitHub
     }
 
     stages {
         stage('Clone') {
             steps {
-               git url: 'git@github.com:Nikunj-19/my-TO-DO-APP.git', branch: 'main'
-
+                checkout([$class: 'GitSCM',
+                    branches: [[name: '*/main']],
+                    userRemoteConfigs: [[
+                        url: 'git@github.com:Nikunj-19/my-TO-DO-APP.git',
+                        credentialsId: env.GIT_CREDENTIALS_ID
+                    ]]
+                ])
             }
         }
 
