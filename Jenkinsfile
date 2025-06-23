@@ -2,9 +2,9 @@ pipeline {
     agent any
 
     environment {
-        EC2_HOST = 'your-ec2-ip'
-        EC2_USER = 'ec2-user'
-        EC2_DEPLOY_DIR = '/home/ec2-user/todoapp'
+        EC2_HOST = '13.233.160.125' // your actual EC2 IP
+        EC2_USER = 'ubuntu'
+        EC2_DEPLOY_DIR = '/home/ubuntu/todoapp'
         CREDENTIALS_ID = 'ec2-ssh'
     }
 
