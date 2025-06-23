@@ -29,12 +29,16 @@ pipeline {
         }
 
         stage('Deploy to EC2') {
-            steps {
-                withCredentials([sshUserPrivateKey(credentialsId: env.CREDENTIALS_ID, keyFileVariable: 'KEY')]) {
-                    bat """
-                    powershell -Command "ssh -i %KEY% -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} mkdir -p ${EC2_DEPLOY_DIR}"
-                    powershell -Command "scp -i %KEY% -o StrictHostKeyChecking=no -r out\\* ${EC2_USER}@${EC2_HOST}:${EC2_DEPLOY_DIR}"
-                    """
+    steps {
+        withCredentials([sshUserPrivateKey(credentialsId: env.CREDENTIALS_ID, keyFileVariable: 'KEY')]) {
+            bat """
+            powershell -Command "ssh -i '%KEY%' -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} mkdir -p ${EC2_DEPLOY_DIR}"
+            powershell -Command "scp -i '%KEY%' -o StrictHostKeyChecking=no -r out\\* ${EC2_USER}@${EC2_HOST}:${EC2_DEPLOY_DIR}"
+            """
+        }
+    }
+}
+
                 }
             }
         }
