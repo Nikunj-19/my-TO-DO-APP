@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        EC2_HOST = ' 3.110.221.101'
+        EC2_HOST = '3.110.221.101'
         EC2_USER = 'ubuntu'
         EC2_DEPLOY_DIR = '/home/ubuntu/todoapp'
         CREDENTIALS_ID = 'ec2-ssh'            // Jenkins SSH key for EC2
@@ -42,11 +42,8 @@ pipeline {
                     powershell -Command "icacls '%KEY%' /inheritance:r"
                     powershell -Command "icacls '%KEY%' /remove:g BUILTIN\\Users"
                     for /f %%u in ('whoami') do icacls "%KEY%" /grant:r "%%u:R"
-                    bat """
                     powershell -Command "ssh -i '%KEY%' -o StrictHostKeyChecking=no -o IdentitiesOnly=yes %EC2_USER%@%EC2_HOST% mkdir -p %EC2_DEPLOY_DIR%"
                     powershell -Command "scp -i '%KEY%' -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -r out\\* %EC2_USER%@%EC2_HOST%:%EC2_DEPLOY_DIR%"
-                    """
-
                     '''
                 }
             }
