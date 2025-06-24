@@ -35,16 +35,15 @@ pipeline {
             }
         }
 
-       stage('Deploy to EC2') {
-    steps {
-        sshagent (credentials: [env.CREDENTIALS_ID]) {
-            bat '''
-            ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes %EC2_USER%@%EC2_HOST% "mkdir -p %EC2_DEPLOY_DIR%"
-            scp -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -r out\\* %EC2_USER%@%EC2_HOST%:%EC2_DEPLOY_DIR%
-            '''
+        stage('Deploy to EC2') {
+            steps {
+                sshagent (credentials: [env.CREDENTIALS_ID]) {
+                    bat '''
+                    ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes %EC2_USER%@%EC2_HOST% "mkdir -p %EC2_DEPLOY_DIR%"
+                    scp -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -r out\\* %EC2_USER%@%EC2_HOST%:%EC2_DEPLOY_DIR%
+                    '''
+                }
+            }
         }
-    }
-}
-
     }
 }
