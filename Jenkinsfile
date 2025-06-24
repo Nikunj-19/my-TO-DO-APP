@@ -47,3 +47,12 @@ pipeline {
         }
     }
 }
+
+stage('Test SSH Agent') {
+    steps {
+        sshagent (credentials: [env.CREDENTIALS_ID]) {
+            bat 'ssh -o StrictHostKeyChecking=no -T ubuntu@13.201.18.192 || echo SSH Failed'
+        }
+    }
+}
+
