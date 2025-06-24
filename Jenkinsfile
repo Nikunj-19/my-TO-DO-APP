@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        EC2_HOST = '13.233.160.125'
+        EC2_HOST = ' 3.110.221.101'
         EC2_USER = 'ubuntu'
         EC2_DEPLOY_DIR = '/home/ubuntu/todoapp'
         CREDENTIALS_ID = 'ec2-ssh'            // Jenkins SSH key for EC2
