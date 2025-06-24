@@ -35,6 +35,14 @@ pipeline {
             }
         }
 
+        stage('Test SSH Agent') {
+            steps {
+                sshagent (credentials: [env.CREDENTIALS_ID]) {
+                    bat 'ssh -o StrictHostKeyChecking=no -T %EC2_USER%@%EC2_HOST% || echo SSH Failed'
+                }
+            }
+        }
+
         stage('Deploy to EC2') {
             steps {
                 sshagent (credentials: [env.CREDENTIALS_ID]) {
@@ -47,12 +55,3 @@ pipeline {
         }
     }
 }
-
-stage('Test SSH Agent') {
-    steps {
-        sshagent (credentials: [env.CREDENTIALS_ID]) {
-            bat 'ssh -o StrictHostKeyChecking=no -T ubuntu@13.201.18.192 || echo SSH Failed'
-        }
-    }
-}
-
