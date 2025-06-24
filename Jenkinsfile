@@ -35,18 +35,16 @@ pipeline {
             }
         }
 
-        stage('Deploy to EC2') {
-            steps {
-                withCredentials([sshUserPrivateKey(credentialsId: env.CREDENTIALS_ID, keyFileVariable: 'KEY', usernameVariable: 'UNUSED')]) {
-                    bat '''
-                    powershell -Command "icacls '%KEY%' /inheritance:r"
-                    powershell -Command "icacls '%KEY%' /remove:g BUILTIN\\Users"
-                    for /f %%u in ('whoami') do icacls "%KEY%" /grant:r "%%u:R"
-                    powershell -Command "ssh -i '%KEY%' -o StrictHostKeyChecking=no -o IdentitiesOnly=yes %EC2_USER%@%EC2_HOST% mkdir -p %EC2_DEPLOY_DIR%"
-                    powershell -Command "scp -i '%KEY%' -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -r out\\* %EC2_USER%@%EC2_HOST%:%EC2_DEPLOY_DIR%"
-                    '''
-                }
-            }
+       stage('Deploy to EC2') {
+    steps {
+        sshagent (credentials: [env.CREDENTIALS_ID]) {
+            bat '''
+            ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes %EC2_USER%@%EC2_HOST% "mkdir -p %EC2_DEPLOY_DIR%"
+            scp -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -r out\\* %EC2_USER%@%EC2_HOST%:%EC2_DEPLOY_DIR%
+            '''
         }
+    }
+}
+
     }
 }
