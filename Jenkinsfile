@@ -39,7 +39,7 @@ pipeline {
             steps {
                 bat '''
                 echo Testing SSH to EC2...
-                ssh -i C:\\Users\\nikun\\.ssh\\jenkins_ec2 -o StrictHostKeyChecking=no -o IdentitiesOnly=yes ubuntu@13.201.18.192 echo SSH Success || echo SSH Failed
+                ssh -i C:\\ProgramData\\Jenkins\\.ssh\\jenkins_ec2 -o StrictHostKeyChecking=no -o IdentitiesOnly=yes ubuntu@13.201.18.192 echo SSH Success || echo SSH Failed
                 '''
             }
         }
