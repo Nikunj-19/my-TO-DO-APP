@@ -12,7 +12,8 @@ pipeline {
     stages {
         stage('Clone') {
             steps {
-                checkout([$class: 'GitSCM',
+                checkout([
+                    $class: 'GitSCM',
                     branches: [[name: '*/main']],
                     userRemoteConfigs: [[
                         url: 'git@github.com:Nikunj-19/my-TO-DO-APP.git',
@@ -35,12 +36,12 @@ pipeline {
             }
         }
 
-        stage('Test SSH via sshagent') {
+        stage('Test SSH to EC2') {
             steps {
                 sshagent (credentials: [env.CREDENTIALS_ID]) {
                     bat '''
                     echo Testing SSH connection to EC2...
-                    ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes %EC2_USER%@%EC2_HOST% echo SSH Connected || echo SSH Failed
+                    ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes %EC2_USER%@%EC2_HOST% "echo SSH Connected" || echo SSH Failed
                     '''
                 }
             }
@@ -50,7 +51,10 @@ pipeline {
             steps {
                 sshagent (credentials: [env.CREDENTIALS_ID]) {
                     bat '''
+                    echo Creating remote deployment directory...
                     ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes %EC2_USER%@%EC2_HOST% "mkdir -p %EC2_DEPLOY_DIR%"
+
+                    echo Uploading files to EC2...
                     scp -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -r out\\* %EC2_USER%@%EC2_HOST%:%EC2_DEPLOY_DIR%
                     '''
                 }
