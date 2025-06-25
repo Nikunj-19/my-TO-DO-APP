@@ -36,19 +36,19 @@ pipeline {
         }
 
         stage('Test SSH Connection') {
-    steps {
-        bat '''
-        echo Testing SSH to EC2...
-        ssh -i "C:\\Program Files\\Jenkins\\.ssh\\jenkins_ec2" -o StrictHostKeyChecking=no -o IdentitiesOnly=yes ubuntu@13.201.18.192 echo SSH Success || echo SSH Failed
-        '''
-    }
-}
-
-
+            steps {
+                sshagent (credentials: [env.CREDENTIALS_ID]) {
+                    bat '''
+                    echo Testing SSH to EC2 using sshagent...
+                    ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes %EC2_USER%@%EC2_HOST% echo SSH Success || echo SSH Failed
+                    '''
+                }
+            }
+        }
 
         stage('Deploy to EC2') {
             steps {
-                sshagent (credentials: ['ec2-ssh']) {
+                sshagent (credentials: [env.CREDENTIALS_ID]) {
                     bat '''
                     ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes %EC2_USER%@%EC2_HOST% "mkdir -p %EC2_DEPLOY_DIR%"
                     scp -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -r out\\* %EC2_USER%@%EC2_HOST%:%EC2_DEPLOY_DIR%
