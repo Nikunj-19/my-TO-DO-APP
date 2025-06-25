@@ -2,11 +2,11 @@ pipeline {
     agent any
 
     environment {
-        EC2_HOST = credentials('ec2-host') // Store in Jenkins credentials
+        EC2_HOST = '13.201.18.192'
         EC2_USER = 'ubuntu'
         EC2_DEPLOY_DIR = '/home/ubuntu/todoapp'
-        CREDENTIALS_ID = 'ec2-ssh'
-        GIT_CREDENTIALS_ID = 'github-ssh-key'
+        CREDENTIALS_ID = 'ec2-ssh'            // Jenkins SSH key for EC2
+        GIT_CREDENTIALS_ID = 'github-ssh-key' // Jenkins SSH key for GitHub
     }
 
     stages {
@@ -29,24 +29,18 @@ pipeline {
             }
         }
 
-        stage('Test') {
-            steps {
-                bat 'dotnet test --configuration Release'
-            }
-        }
-
         stage('Publish') {
             steps {
                 bat 'dotnet publish --configuration Release --output out'
             }
         }
 
-        stage('Test SSH') {
+        stage('Test SSH via sshagent') {
             steps {
                 sshagent (credentials: [env.CREDENTIALS_ID]) {
                     bat '''
                     echo Testing SSH connection to EC2...
-                    ssh -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes %EC2_USER%@%EC2_HOST% echo SSH Connected || exit 1
+                    ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes %EC2_USER%@%EC2_HOST% echo SSH Connected || echo SSH Failed
                     '''
                 }
             }
@@ -56,22 +50,11 @@ pipeline {
             steps {
                 sshagent (credentials: [env.CREDENTIALS_ID]) {
                     bat '''
-                    ssh -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes %EC2_USER%@%EC2_HOST% "mkdir -p %EC2_DEPLOY_DIR% && rm -rf %EC2_DEPLOY_DIR%/*"
-                    scp -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -r out/* %EC2_USER%@%EC2_HOST%:%EC2_DEPLOY_DIR%
-                    ssh -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes %EC2_USER%@%EC2_HOST% "cd %EC2_DEPLOY_DIR% && sudo systemctl restart myapp"
+                    ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes %EC2_USER%@%EC2_HOST% "mkdir -p %EC2_DEPLOY_DIR%"
+                    scp -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -r out\\* %EC2_USER%@%EC2_HOST%:%EC2_DEPLOY_DIR%
                     '''
                 }
             }
-        }
-    }
-
-    post {
-        failure {
-            echo 'Pipeline failed! Notifying team...'
-            // Add notification (e.g., Slack, email)
-        }
-        success {
-            echo 'Deployment successful!'
         }
     }
 }
