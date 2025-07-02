@@ -2,8 +2,8 @@ html {
   font-size: 14px;
   position: relative;
   min-height: 100%;
-  background-color: #f5f8fa; /* Light background */
-  color: #333333; /* Default text color */
+  background-color: #fdfcf5; /* soft cream background */
+  color: #2d2d2d; /* dark gray text */
 }
 
 @media (min-width: 768px) {
@@ -14,8 +14,8 @@ html {
 
 body {
   margin-bottom: 60px;
-  background-color: #ffffff; /* White background for body */
-  color: #212529; /* Bootstrap default text color */
+  background-color: #ffffff; /* white background for body */
+  color: #1b1b1b;
 }
 
 .btn:focus,
@@ -23,29 +23,41 @@ body {
 .btn-link.nav-link:focus,
 .form-control:focus,
 .form-check-input:focus {
-  box-shadow: 0 0 0 0.25rem #026ee3, 0 0 0 0.1rem #0d47a1; /* Blue outer + deeper blue inner */
-  border-color: #026ee3;
+  box-shadow: 0 0 0 0.25rem #28a745, 0 0 0 0.1rem #155724; /* green outer + dark green inner */
+  border-color: #28a745;
 }
 
 .form-floating > .form-control-plaintext::placeholder,
 .form-floating > .form-control::placeholder {
-  color: #6c757d; /* Gray placeholder */
+  color: #999999; /* light gray */
   text-align: end;
 }
 
 .form-floating > .form-control-plaintext:focus::placeholder,
 .form-floating > .form-control:focus::placeholder {
   text-align: start;
-  color: #495057; /* Slightly darker gray when focused */
+  color: #555555; /* medium gray on focus */
 }
 
-/* Optional: Add more visual colors to form elements */
 input.form-control {
-  background-color: #e9f5ff; /* Light blue input background */
-  border: 1px solid #b6d4fe;
+  background-color: #fff7ed; /* soft orange input background */
+  border: 1px solid #f5c290; /* peachy border */
+  color: #2d2d2d;
 }
 
 input.form-control:focus {
   background-color: #ffffff;
-  border-color: #026ee3;
+  border-color: #ff8800; /* bright orange */
+}
+
+/* Optional: add button styling */
+.btn-custom {
+  background-color: #28a745;
+  color: #ffffff;
+  border: none;
+}
+
+.btn-custom:hover {
+  background-color: #218838;
+  color: #ffffff;
 }
